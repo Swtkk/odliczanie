@@ -95,6 +95,9 @@ export default function Home() {
                       className="heroVideo"
                       src="/techno.mp4"
                       autoPlay
+                      muted
+                      loop
+                      playsInline
                       controls
                   />
               ) : (
