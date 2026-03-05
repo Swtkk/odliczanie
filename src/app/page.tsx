@@ -129,13 +129,13 @@ export default function Home() {
                     <button className="btn" onClick={spawnHearts}>
                       💙 Puść serduszka
                     </button>
-                    <button
-                        className="btn"
-                        onClick={() => setTestVideo(true)}
-                        style={{marginLeft: "10px"}}
-                    >
-                      🎬 Test filmu
-                    </button>
+                    {/*<button*/}
+                    {/*    className="btn"*/}
+                    {/*    onClick={() => setTestVideo(true)}*/}
+                    {/*    style={{marginLeft: "10px"}}*/}
+                    {/*>*/}
+                    {/*  🎬 Test filmu*/}
+                    {/*</button>*/}
                   </div>
 
               )}
