@@ -107,7 +107,7 @@ export default function Home() {
 
             <div className="heroText">
               <p className="badge">Odliczanie</p>
-              <h1 className="title">Do 1 kwietnia</h1>
+              <h1 className="title">Arek czekamy...</h1>
 
               <p className="sub">
                 Dziś jest <span className="subStrong">{today}</span>
@@ -145,8 +145,6 @@ export default function Home() {
 
           <footer className="footer">
             <span>✨ Miłego dnia</span>
-            <span className="dot">•</span>
-            <span>⏳ Odliczanie aktualizuje się co sekundę</span>
           </footer>
         </section>
       </main>
