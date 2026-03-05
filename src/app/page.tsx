@@ -15,8 +15,13 @@ function pad(n: number) {
 }
 
 export default function Home() {
-  // Ustaw cel: 1 kwietnia (tu wpisane 2026, możesz zmienić rok)
+  // Cel: 1 kwietnia (zmień rok jak chcesz)
   const targetDate = useMemo(() => new Date("2026-04-01T00:00:00"), []);
+  const [testVideo, setTestVideo] = useState(false);
+  // TU WKLEJ SWÓJ LINK (EMBED)
+  // przykład: https://www.youtube.com/embed/dQw4w9WgXc?autoplay=1&mute=1
+  const VIDEO_EMBED_URL =
+      "https://www.youtube.com/embed/VIDEO_ID?autoplay=1&mute=1&rel=0";
 
   const [today, setToday] = useState("");
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
@@ -59,69 +64,96 @@ export default function Home() {
     return () => clearInterval(t);
   }, [targetDate]);
 
+  // Opcjonalnie: automatycznie serduszka po wybiciu daty (raz)
+  useEffect(() => {
+    if (!timeLeft.done) return;
+
+    // odpal na chwilę, jak już wybije
+    setHeartsOn(true);
+    const t = window.setTimeout(() => setHeartsOn(false), 4200);
+    return () => window.clearTimeout(t);
+  }, [timeLeft.done]);
+
   const spawnHearts = () => {
-    // Odpal animację na ~4 sekundy
     setHeartsOn(true);
     window.setTimeout(() => setHeartsOn(false), 4200);
-
-    // (Opcjonalnie) delikatny „rumble” przy kliknięciu na mobile:
     if (navigator.vibrate) navigator.vibrate(30);
   };
 
   return (
       <main className="page">
-        {/* tło */}
         <div className="bgGlow" aria-hidden="true" />
         <div className="bgNoise" aria-hidden="true" />
 
-        {/* serduszka */}
         {heartsOn && <HeartsRain />}
 
         <section className="card">
           <div className="hero">
-
             <div className="imageWrap">
-              <img
-                  src="/arek.jpg"
-                  alt="Moje zdjęcie"
-                  className="heroImg"
-              />
-              <div className="imageOverlay"/>
+              {timeLeft.done || testVideo ? (
+                  <video
+                      className="heroVideo"
+                      src="/techno.mp4"
+                      autoPlay
+                      controls
+                  />
+              ) : (
+                  <>
+                    <img src="/arek.jpg" alt="Moje zdjęcie" className="heroImg" />
+                    <div className="imageOverlay" />
+                  </>
+              )}
             </div>
 
             <div className="heroText">
               <p className="badge">Odliczanie</p>
-              <h1 className="title">Arek czekamy...</h1>
+              <h1 className="title">Do 1 kwietnia</h1>
 
               <p className="sub">
                 Dziś jest <span className="subStrong">{today}</span>
               </p>
 
-              <div className="countdown">
-                <TimeBox label="Dni" value={String(timeLeft.days)}/>
-                <TimeBox label="Godz" value={pad(timeLeft.hours)}/>
-                <TimeBox label="Min" value={pad(timeLeft.minutes)}/>
-                <TimeBox label="Sek" value={pad(timeLeft.seconds)}/>
-              </div>
+              {timeLeft.done ? (
+                  <div className="doneBox">🎉 To już dziś! Miłej zabawy 😄</div>
+              ) : (
+                  <div className="countdown">
+                    <TimeBox label="Dni" value={String(timeLeft.days)}/>
+                    <TimeBox label="Godz" value={pad(timeLeft.hours)}/>
+                    <TimeBox label="Min" value={pad(timeLeft.minutes)}/>
+                    <TimeBox label="Sek" value={pad(timeLeft.seconds)}/>
+                  </div>
+              )}
 
-              <div className="actions">
-                <button className="btn" onClick={spawnHearts}>
-                  💖 Puść serduszka dla Arka
-                </button>
-              </div>
+              {!timeLeft.done && (
+                  <div className="actions">
+                    <button className="btn" onClick={spawnHearts}>
+                      💙 Puść serduszka
+                    </button>
+                    <button
+                        className="btn"
+                        onClick={() => setTestVideo(true)}
+                        style={{marginLeft: "10px"}}
+                    >
+                      🎬 Test filmu
+                    </button>
+                  </div>
+
+              )}
+
             </div>
-
           </div>
 
           <footer className="footer">
             <span>✨ Miłego dnia</span>
+            <span className="dot">•</span>
+            <span>⏳ Odliczanie aktualizuje się co sekundę</span>
           </footer>
         </section>
       </main>
   );
 }
 
-function TimeBox({label, value}: { label: string; value: string }) {
+function TimeBox({ label, value }: { label: string; value: string }) {
   return (
       <div className="timeBox">
         <div className="timeValue">{value}</div>
@@ -131,20 +163,17 @@ function TimeBox({label, value}: { label: string; value: string }) {
 }
 
 function HeartsRain() {
-  // generujemy np. 36 serduszek z losowymi parametrami
   const hearts = useMemo(() => {
     const count = 36;
-    return Array.from({length: count}).map((_, i) => {
-      const left = Math.random() * 100; // %
-      const delay = Math.random() * 0.6; // s
-      const duration = 2.8 + Math.random() * 1.6; // s
-      const size = 14 + Math.random() * 22; // px
-      const drift = (Math.random() * 2 - 1) * 80; // px
+    return Array.from({ length: count }).map((_, i) => {
+      const left = Math.random() * 100;
+      const delay = Math.random() * 0.6;
+      const duration = 2.8 + Math.random() * 1.6;
+      const size = 14 + Math.random() * 22;
+      const drift = (Math.random() * 2 - 1) * 80;
       const opacity = 0.55 + Math.random() * 0.4;
-
       const emoji = Math.random() < 0.85 ? "💗" : "💖";
-
-      return {id: i, left, delay, duration, size, drift, opacity, emoji };
+      return { id: i, left, delay, duration, size, drift, opacity, emoji };
     });
   }, []);
 
@@ -160,7 +189,6 @@ function HeartsRain() {
                   animationDuration: `${h.duration}s`,
                   fontSize: `${h.size}px`,
                   opacity: h.opacity,
-                  // przekazujemy drift jako CSS variable:
                   ["--drift" as any]: `${h.drift}px`,
                 }}
             >
